@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RainScape 3D</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@200;300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      body, html { width: 100%; height: 100%; overflow: hidden; background: #030610; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #fff; }
+      #root { width: 100%; height: 100%; }
+
+      /* ---- Layout ---- */
+      .app-container { position: relative; width: 100%; height: 100%; }
+      .canvas-layer { position: absolute; inset: 0; z-index: 0; }
+      .ui-overlay {
+        position: absolute; inset: 0; z-index: 10;
+        padding: 28px 36px;
+        display: flex; flex-direction: column; justify-content: space-between;
+        pointer-events: none;
+      }
+
+      /* ---- Header / Brand ---- */
+      .header { display: flex; justify-content: space-between; align-items: flex-start; }
+      .brand-title {
+        font-size: 38px; font-weight: 200; letter-spacing: 0.18em; line-height: 1;
+      }
+      .brand-light { color: rgba(255,255,255,0.85); }
+      .brand-accent {
+        font-weight: 700;
+        background: linear-gradient(135deg, #4a9eff 0%, #7cc4ff 50%, #a0d8ff 100%);
+        -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .brand-subtitle {
+        display: flex; align-items: center; gap: 10px;
+        margin-top: 6px;
+        font-size: 9.5px; letter-spacing: 0.25em;
+        color: rgba(140, 180, 230, 0.45);
+        font-weight: 400;
+      }
+      .brand-line {
+        display: inline-block;
+        width: 24px; height: 1px;
+        background: linear-gradient(90deg, rgba(80,140,220,0.4), transparent);
+      }
+      .brand-line:last-child {
+        background: linear-gradient(90deg, transparent, rgba(80,140,220,0.4));
+      }
+
+      /* ---- Controls / Select ---- */
+      .controls { pointer-events: auto; }
+      .select-wrapper {
+        position: relative;
+        background: rgba(8, 15, 30, 0.6);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(80, 140, 220, 0.15);
+        border-radius: 10px;
+        padding: 2px;
+        transition: border-color 0.3s;
+      }
+      .select-wrapper:hover { border-color: rgba(80, 140, 220, 0.35); }
+      .location-select {
+        appearance: none;
+        background: transparent;
+        border: none; outline: none;
+        color: rgba(255,255,255,0.85);
+        font-family: 'Inter', sans-serif;
+        font-size: 12px; font-weight: 500;
+        letter-spacing: 0.08em;
+        padding: 10px 36px 10px 16px;
+        cursor: pointer;
+        min-width: 180px;
+      }
+      .location-select option { background: #0a1428; color: #fff; }
+      .select-chevron {
+        position: absolute;
+        right: 12px; top: 50%;
+        transform: translateY(-50%);
+        width: 14px; height: 14px;
+        color: rgba(100, 160, 240, 0.5);
+        pointer-events: none;
+      }
+
+      /* ---- Stats Bar ---- */
+      .stats-bar {
+        position: absolute;
+        left: 36px;
+        bottom: 72px;
+        display: flex; align-items: center; gap: 20px;
+        background: rgba(8, 15, 30, 0.5);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid rgba(60, 120, 200, 0.1);
+        border-radius: 12px;
+        padding: 12px 24px;
+        animation: fadeSlideUp 0.8s ease-out both;
+        animation-delay: 0.3s;
+      }
+      .stat { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+      .stat-value {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 18px; font-weight: 600;
+        color: rgba(255,255,255,0.9);
+        letter-spacing: -0.02em;
+      }
+      .stat-unit {
+        font-size: 11px; font-weight: 400;
+        color: rgba(120, 170, 240, 0.6);
+        margin-left: 2px;
+      }
+      .stat-label {
+        font-size: 8.5px; font-weight: 500;
+        letter-spacing: 0.18em;
+        color: rgba(120, 170, 240, 0.4);
+        text-transform: uppercase;
+      }
+      .stat-divider {
+        width: 1px; height: 28px;
+        background: linear-gradient(180deg, transparent, rgba(80,140,220,0.2), transparent);
+      }
+
+      /* ---- Footer ---- */
+      .footer {
+        display: flex; justify-content: space-between; align-items: flex-end;
+        position: relative;
+      }
+      .footer-left { display: flex; align-items: center; gap: 6px; }
+      .footer-center {
+        position: absolute; left: 50%; transform: translateX(-50%);
+        bottom: 2px; /* Adjust alignment with flex-end items */
+      }
+      .created-by {
+        font-size: 9px; font-weight: 400;
+        letter-spacing: 0.15em;
+        color: rgba(255,255,255,0.3);
+        text-transform: uppercase;
+        font-family: 'Inter', sans-serif;
+      }
+      .coord {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 10px; font-weight: 400;
+        color: rgba(255,255,255,0.3);
+        letter-spacing: 0.03em;
+      }
+      .coord-sep { color: rgba(255,255,255,0.12); font-size: 10px; }
+      .footer-right { display: flex; align-items: center; gap: 12px; }
+      .source-badge {
+        display: flex; align-items: center; gap: 6px;
+        font-size: 9px; font-weight: 600;
+        letter-spacing: 0.12em;
+        color: rgba(100, 200, 150, 0.7);
+        text-transform: uppercase;
+      }
+      .source-dot {
+        width: 5px; height: 5px;
+        border-radius: 50%;
+        background: #4ade80;
+        box-shadow: 0 0 6px rgba(74, 222, 128, 0.6);
+        animation: pulse-dot 2s ease-in-out infinite;
+      }
+      .source-text {
+        font-size: 9px; font-weight: 400;
+        letter-spacing: 0.15em;
+        color: rgba(255,255,255,0.25);
+        text-transform: uppercase;
+      }
+
+      /* ---- Loading ---- */
+      .loading-overlay {
+        position: absolute; inset: 0; z-index: 20;
+        display: flex; align-items: center; justify-content: center;
+        background: rgba(3, 6, 16, 0.4);
+        backdrop-filter: blur(4px);
+      }
+      .loader {
+        position: relative;
+        display: flex; flex-direction: column;
+        align-items: center; gap: 16px;
+      }
+      .loader-ring {
+        width: 48px; height: 48px;
+        border: 2px solid rgba(60, 130, 240, 0.15);
+        border-top-color: rgba(80, 160, 255, 0.8);
+        border-radius: 50%;
+        animation: spin 1s linear infinite;
+      }
+      .loader-ring-2 {
+        position: absolute; top: -4px; left: -4px;
+        width: 56px; height: 56px;
+        border: 1px solid rgba(60, 130, 240, 0.08);
+        border-bottom-color: rgba(100, 180, 255, 0.3);
+        animation: spin 2.5s linear infinite reverse;
+      }
+      .loader-text {
+        font-size: 9px; font-weight: 500;
+        letter-spacing: 0.3em;
+        color: rgba(120, 170, 240, 0.5);
+      }
+
+      /* ---- Animations ---- */
+      @keyframes spin { to { transform: rotate(360deg); } }
+      @keyframes pulse-dot {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.5; transform: scale(0.8); }
+      }
+      @keyframes fadeSlideUp {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+
+      /* ---- Cloud lightning glow (mirrors reference .lightning-glow) ---- */
+      @keyframes hg-lightning-flash {
+        0%   { opacity: 0.85; }
+        15%, 100% { opacity: 0; }
+      }
+      .hg-lightning-glow { opacity: 0; }
+      .hg-lightning-glow.hg-flash {
+        animation: hg-lightning-flash 0.8s ease-out;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@18.2.0",
+    "react/": "https://esm.sh/react@18.2.0/",
+    "react-dom": "https://esm.sh/react-dom@18.2.0",
+    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
+    "three": "https://esm.sh/three@0.160.0",
+    "@react-three/fiber": "https://esm.sh/@react-three/fiber@8.15.16?external=react,react-dom,three",
+    "@react-three/drei": "https://esm.sh/@react-three/drei@9.99.0?external=react,react-dom,three,@react-three/fiber",
+    "uuid": "https://esm.sh/uuid@9.0.1",
+    "react-dom/": "https://esm.sh/react-dom@18.2.0/"
+  }
+}
+</script>
+</head>
+  <body>
+    <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+{
+  "name": "RainScape 3D",
+  "description": "An immersive 3D rainfall visualization tool using WebGL shaders and real-world data from Open-Meteo.",
+  "requestFramePermissions": []
+}
