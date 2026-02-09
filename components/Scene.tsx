@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { OrbitControls, Stars, PerspectiveCamera, Environment } from '@react-three/drei';
 import * as THREE from 'three';
@@ -12,11 +12,24 @@ interface SceneProps {
 
 export default function Scene({ data, loading }: SceneProps) {
   const controlsRef = useRef<any>(null);
+  const [cameraPos, setCameraPos] = useState<[number, number, number]>([0, 5, 38]);
+
+  useEffect(() => {
+    const updateCamera = () => {
+      const isMobile = window.innerWidth < 768;
+      // Move camera further back and slightly higher on mobile
+      setCameraPos(isMobile ? [0, 15, 65] : [0, 5, 38]);
+    };
+    
+    updateCamera();
+    window.addEventListener('resize', updateCamera);
+    return () => window.removeEventListener('resize', updateCamera);
+  }, []);
 
   return (
     <>
       {/* Updated camera position for a wider, more centered initial view matching the reference */}
-      <PerspectiveCamera makeDefault position={[0, 5, 38]} fov={32} />
+      <PerspectiveCamera makeDefault position={cameraPos} fov={32} />
       <OrbitControls 
         ref={controlsRef}
         maxPolarAngle={Math.PI / 2 - 0.05} 
