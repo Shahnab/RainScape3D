@@ -1,20 +1,61 @@
+# RainScape 3D
+
 <div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
+  <h3>Atmospheric Data Visualization</h3>
+  <p>A mesmerizing 3D visualization of rainfall data using React Three Fiber.</p>
+  
+  <a href="https://Shahnab.github.io/RainScape3D"><strong>View Live Demo »</strong></a>
 </div>
 
-# Run and deploy your AI Studio app
+<br />
 
-This contains everything you need to run your app locally.
+## 🌟 Overview
 
-View your app in AI Studio: https://ai.studio/apps/drive/19VWToFweTiSuXDV4T0R_YANTr_SMSAtf
+RainScape 3D is an immersive weather visualization application that renders rainfall data in a beautiful 3D environment. It fetches real-time and historical weather data to simulate accurate atmospheric conditions for various global locations.
 
-## Run Locally
+![RainScape Preview](public/preview.png)
 
-**Prerequisites:**  Node.js
+## ✨ Features
 
+- **Interactive 3D Scene**: rendered with React Three Fiber, featuring volumetric rain, dynamic clouds, and water surfaces.
+- **Real-time Data**: Integrates with [Open-Meteo API](https://open-meteo.com/) for accurate rainfall statistics.
+- **Global Locations**: Switch between major cities like London, Tokyo, New York, and Singapore to see their specific weather patterns.
+- **Data Analysis**: Visual stats overlay showing total rainfall, peak intensity, and rainy days count.
+- **Responsive Design**: Smooth performance across devices.
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## 🛠️ Built With
+
+- **[React](https://reactjs.org/)** - UI Framework
+- **[Three.js](https://threejs.org/)** & **[React Three Fiber](https://docs.pmnd.rs/react-three-fiber)** - 3D Rendering
+- **[Vite](https://vitejs.dev/)** - Build Tool
+- **[TypeScript](https://www.typescriptlang.org/)** - Type Safety
+
+## 🚀 Getting Started
+
+To run this project locally:
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Shahnab/RainScape3D.git
+   cd hydrograph-3d
+   ```
+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
+
+3. **Start the development server**
+   ```bash
+   npm run dev
+   ```
+
+## 📄 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
+
+<br />
+
+<div align="center">
+  <small>Created by Shahnab</small>
+</div>
