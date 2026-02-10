@@ -37,7 +37,7 @@ To run this project locally:
 1. **Clone the repository**
    ```bash
    git clone https://github.com/Shahnab/RainScape3D.git
-   cd hydrograph-3d
+   cd RainScape3D
    ```
 
 2. **Install dependencies**
